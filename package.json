@@ -1,7 +1,7 @@
 {
-  "name": "initial",
+  "name": "eye_protector",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "main.js",
   "license": "MIT",
   "scripts": {
     "start": "electron main.js"
@@ -10,5 +10,7 @@
     "electron": "^5.0.7",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
-  }
+  },
+  "description": "Electron's app for protect your eyes",
+  "author": "walek"
 }
