@@ -1,5 +1,5 @@
-import React from 'react';
 import React, { useState } from 'react';
+import { render } from 'react-dom';
 
 const Container = props => {
   return (
@@ -9,7 +9,7 @@ const Container = props => {
 
 const Header = () => {
   return (
-    <h1> Protect your eyes </h1>
+    <h1>Protect your eyes</h1>
   );
 };
 
@@ -22,52 +22,82 @@ const TopInformation = () => {
   );
 };
 
-const Timer = (props) => {
-  return (
-    <div className="timer">
-      20:00
-    </div>
-  );
-};
-
-const Button = (props) => {
-  return (
-    <div>
-      <button className="btn">{props.children}</button>
-    </div>
-  );
-};
-
-const ButtonClose = (props) => {
-  return (
-    <button className="btn btn-close">{props.children}</button>
-  );
-};
-
 class App extends React.Component {
 
-  state = {
-    status: 'off',
-    time: 0,
-    timer: 'null',
+  constructor(props) {
+    super(props);
+    this.state = {
+      status: 'off',
+      time: '0',
+      timer: 'null',
+    };
+
+    this.settings = {
+      timeWork: 1200,
+      timeRest: 20,
+      soundBell: './sounds/bell.wav',
+      imageWork: './images/Work.png',
+      imageRest: './images/Rest.png',
+    }
   }
+
+  formatTime = (time) => {
+    let minutes = Math.floor(time / 60);
+    let seconds = time - minutes * 60;
+    if (minutes < 10) minutes = '0' + minutes;
+    if (seconds < 10) seconds = '0' + seconds;
+    return minutes + ':' + seconds;
+  }
+
+  playBell = () => {
+    const audioElement = new Audio(this.settings.soundBell);
+    audioElement.play();
+  };
+
+  step = () => {
+    const time = this.state.time;
+    const status = this.state.status;
+
+    if (time === 0) {
+      if (status === 'work') {
+        this.playBell();
+        this.setState({status: 'rest',time: this.settings.timeRest});
+      }
+      if (status === 'rest') {
+        this.playBell();
+        this.setState({status: 'work',time: this.settings.timeWork});
+      }
+    };
+
+    this.setState(state => ({time: state.time - 1 }))
+
+  };
+
+  startTimer = () => {
+    this.setState({status: 'work',time: this.settings.timeWork,timer: setInterval(this.step, 1000)});
+  };
+
+  stopTimer = () => {
+    this.setState({status: 'off',time: 0,timer: clearInterval(this.state.timer)});
+  };
 
   closeApp = () => {
-    console.log('close');
     window.close();
-  }
+  };
 
   render() {
+    const { status, time } = this.state;
+
     return (
       <Container>
         <Header />
-        <TopInformation />
-        <img src="./images/work.png" />
-        <img src="./images/rest.png" />
-        <Timer />
-        <Button>Start</Button>
-        <Button>Stop</Button>
-        <ButtonClose onClick={this.closeApp}>X</ButtonClose>
+        {(status === 'off') && <TopInformation />}
+        {(status === 'work') && <img src={this.settings.imageWork} />}
+        {(status === 'rest') && <img src={this.settings.imageRest} />}
+        {(status !== 'off') && <div className="timer">{this.formatTime(time)}</div>}
+        {(status === 'off') && <button className="btn" onClick={this.startTimer}>Start</button>}
+        {(status !== 'off') && <button className="btn" onClick={this.stopTimer}>Stop</button>}
+        <button onClick={this.closeApp} className="btn btn-close">X</button>
       </Container>
     )
   }

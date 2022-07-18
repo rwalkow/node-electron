@@ -12,6 +12,7 @@ function main() {
     },
     width: 800,
     height: 600,
+    frame: false,
   })
 
   // load app/index.html as the window content
